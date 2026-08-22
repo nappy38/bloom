@@ -231,7 +231,7 @@ input[type=range]::-webkit-slider-thumb{
     <summary>音源を端末に置く</summary>
     <p class="lnote">音源はアプリには入っていません。ここで選ぶと<b>この端末の中だけ</b>に保存され、オフラインでも鳴るようになります。アプリを公開しても、音源が誰かに渡ることはありません。<br>PCの音源フォルダからスマホへファイルを移してから、下の「選ぶ」で指定してください。</p>
     <div id="localSlots"></div>
-    <input type="file" id="slotFile" accept="audio/*" style="display:none">
+    <input type="file" id="slotFile" style="display:none">
     <div class="lmsg" id="localMsg"></div>
   </details>
 </div>
@@ -537,7 +537,7 @@ if("serviceWorker" in navigator){
         <div class="lstate${have?' on':''}">${have?'取り込み済み':'未取り込み'}</div>`;
       const pick=document.createElement("button");
       pick.className="lbtn"; pick.textContent=have?"入れ直す":"選ぶ";
-      pick.onclick=()=>{ pendingKey=k; filePick.value=""; filePick.accept=(k===COVER_KEY)?"image/*":"audio/*"; filePick.click(); };
+      pick.onclick=()=>{ pendingKey=k; filePick.value=""; filePick.accept="*/*"; filePick.click(); };
       row.appendChild(pick);
       if(have){
         const del=document.createElement("button");
@@ -556,6 +556,9 @@ if("serviceWorker" in navigator){
     if(!f||!pendingKey) return;
     tell("取り込んでいます…");
     try{
+      if(!f.size){ tell(`「${f.name}」は中身が空でした。スマホへの転送が途中で終わっている可能性があります。`); pendingKey=null; return; }
+      const head=await f.slice(0,4).arrayBuffer();          // 実際に読めるか確かめる
+      if(!head||head.byteLength===0){ tell(`「${f.name}」を読み取れませんでした。いったん端末内（ダウンロード）にコピーしてから選んでください。`); pendingKey=null; return; }
       await bPut(pendingKey,f);
       bHaveSet(pendingKey,f.name);
       render();
@@ -564,7 +567,7 @@ if("serviceWorker" in navigator){
       if(pendingKey===COVER_KEY) await applyLocalCover();
       else if(tkey(cur)===pendingKey) await setTrackSrc(cur);
     }catch(e){
-      tell("取り込めませんでした。空き容量が足りないかもしれません。");
+      tell(`取り込めませんでした（${e&&e.name?e.name:"不明なエラー"}）。空き容量か、ファイルの置き場所を確認してください。`);
     }
     pendingKey=null;
   };
