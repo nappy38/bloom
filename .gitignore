@@ -1,0 +1,13 @@
+# 公開するのは、アプリが動くのに必要なファイルだけ。
+# 音源・カバー画像は他人の著作物なので、絶対にここを通さない。
+# 新しく公開したいファイルが増えたら「!ファイル名」を足すこと。
+*
+!.gitignore
+!index.html
+!sw.js
+!manifest.webmanifest
+!icons/
+!icons/icon-192.png
+!icons/icon-512.png
+!icons/apple-touch-icon.png
+!icons/favicon-32.png
