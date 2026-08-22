@@ -410,9 +410,28 @@ function ensureAudioGraph(){
 }
 
 async function play(){
+  const t = TRACKS[trackIndex];
+  /* 端末に取り込んでいない曲は鳴らない（音源はアプリに入っていないため）。
+     黙って失敗すると壊れたように見えるので、理由を出して取り込みパネルを開く。 */
+  if(!(await bGet(tkey(t)))){
+    statusEl.textContent = `${t.num} ${t.name} は、まだこの端末に入っていません`;
+    const panel = document.querySelector(".localpanel");
+    if(panel){
+      panel.open = true;
+      panel.scrollIntoView({behavior:"smooth", block:"center"});
+      const msg = document.getElementById("localMsg");
+      if(msg) msg.textContent = "下の「選ぶ」から、この曲の音源を取り込んでください。";
+    }
+    return;
+  }
   ensureAudioGraph();
   if(audioCtx.state === "suspended") await audioCtx.resume();
-  await player.play();
+  try{
+    await player.play();
+  }catch(e){
+    statusEl.textContent = "再生できませんでした。音源を入れ直してみてください";
+    return;
+  }
   playBtn.textContent = "❚❚";
   statusEl.textContent = "再生中";
   if(timerMinutes>0 && !timerDeadline) timerDeadline = Date.now() + timerMinutes*60000;
@@ -550,6 +569,11 @@ if("serviceWorker" in navigator){
     pendingKey=null;
   };
   render(); applyLocalCover();
+  /* 1曲も入っていない＝初回。案内が目に入るようにパネルを開いておく */
+  if(!TRACKS.some(t=>bHave(tkey(t)))){
+    document.querySelector(".localpanel").open=true;
+    tell("まだ音源が入っていません。各行の「選ぶ」から取り込んでください。");
+  }
 })();
 </script>
 </body>
