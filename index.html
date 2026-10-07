@@ -16,6 +16,7 @@
 :root{
   --bg:#f4efe4; --bg2:#ede3d2; --card:#fdfaf3; --ink:#4a3a37; --sub:#a3877f;
   --line:#eaded0; --rose:#cf8f8a; --rose-d:#b3716c; --gold:#c9974f; --gold-d:#a8783a;
+  --pink-mine:#9c5650; --pink-mine-bg:#fbe9e7;
   --shadow:0 10px 30px rgba(150,100,90,.14);
 }
 *{box-sizing:border-box}
@@ -95,6 +96,9 @@ header .sub{font-size:11px; color:var(--sub); margin-top:2px; font-family:"Cormo
   border:1px solid var(--line); background:var(--card); cursor:pointer;
 }
 .trackrow.active{ border-color:var(--gold); background:linear-gradient(90deg,#fff,#fdf1e8); box-shadow:var(--shadow); }
+.trackrow.mine{ border-color:var(--pink-mine); background:linear-gradient(90deg,#fff,var(--pink-mine-bg)); box-shadow:0 4px 14px rgba(156,86,80,.25); }
+.trackrow.mine.active{ box-shadow:var(--shadow); }
+.trackrow.hl{ border-color:#ff7eb6; background:linear-gradient(90deg,#ffe3f0,#ffb8d9); }
 .trackrow .num{ font-size:16px; flex:0 0 auto; }
 .trackrow .meta{ flex:1; min-width:0; }
 .trackrow .meta .t{ font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -282,7 +286,7 @@ const TRACKS = [
   { file:"audio/09c-fujiikaze-interview.mp3", num:"⑤", name:"藤井風 インタビュー（MAJ2026レッドカーペット）", desc:"10秒〜・36秒" },
   { file:"audio/04b-after-chanmina.mp3", num:"⑥", name:"藤井風の言葉（大丈夫）", desc:"5秒〜・44秒" },
   { file:"audio/04c-sojah-pon-di-corner.mp3", num:"⑦", name:"Pon Di Corner（Sojah!）", desc:"レゲエ／4分20秒" },
-  { file:"audio/09-fujiikaze-you.mp3", num:"⑧", name:"You（藤井風・UMI）",                   desc:"4分41秒" },
+  { file:"audio/09-fujiikaze-you.mp3", num:"⑧", hl:true, name:"You（藤井風・UMI）",                   desc:"4分41秒", mine:true },
   { file:"audio/08-riddim.mp3",       num:"⑨", name:"Riddim まとめ2",                       desc:"レゲエ／18分49秒" },
   { file:"audio/05-chanting.mp3",   num:"⑩", name:"サイババアシュラム",                     desc:"" },
   { file:"audio/07-surrender.mp3",  num:"⑪", name:"手放し・明け渡し",                   desc:"誘導瞑想・7分37秒" },
@@ -385,7 +389,7 @@ function renderTracklist(){
   tracklistEl.innerHTML = "";
   TRACKS.forEach((t,i)=>{
     const row = document.createElement("div");
-    row.className = "trackrow" + (i===trackIndex ? " active" : "");
+    row.className = "trackrow" + (i===trackIndex ? " active" : "") + (t.mine ? " mine" : "") + (t.hl ? " hl" : "");
     row.innerHTML = `<span class="num">${t.num}</span>
       <span class="meta"><div class="t">${t.name}</div><div class="d">${t.desc}</div></span>
       <span class="dur" data-dur="${i}">--:--</span>`;
