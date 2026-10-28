@@ -186,7 +186,8 @@ input[type=range]::-webkit-slider-thumb{
   </header>
 
   <div class="cover-zone">
-    <div class="cover-wrap">
+    <video id="player" playsinline webkit-playsinline preload="metadata" style="display:none;width:100%;max-width:340px;max-height:52vh;object-fit:contain;aspect-ratio:16/9;border-radius:14px;background:#000;margin:0 auto"></video>
+    <div class="cover-wrap" id="coverWrap">
       <div class="cover-ring"></div>
       <img class="cover" id="cover" src="" alt="Bloom" style="background:var(--bg2)">
     </div>
@@ -295,9 +296,8 @@ const TRACKS = [
   { file:"audio/08-hiit.mp3",       num:"⑭", name:"HIIT",                                 desc:"4分20秒" },
   { file:"audio/09-facemassage-line.mp3",       num:"⑮", name:"顔痩せマッサージ",         desc:"フェイスライン・むくみ／2分58秒" },
   { file:"audio/10-facemassage-hoho-agokubire.mp3", num:"⑯", name:"顔痩せトレ",           desc:"ほっぺ肉・二重アゴ／3:15〜・12分13秒" },
-  { file:"audio/11-mantra-sorasobateiei.mp3",  num:"⑰", name:"真言「オン ソラソバテイエイ ソワカ」", desc:"自作・4分21秒" },
-  { file:"audio/11b-mantra-sorasobateiei-short.mp3", num:"⑱", name:"真言「オン ソラソバテイエイ ソワカ」（短縮版）", desc:"自作・1分00秒" },
-  { file:"audio/12-mantra-makakyaraya.mp3",    num:"⑲", name:"真言「オン マカキャラヤ ソワカ」", desc:"自作・2分39秒" },
+  { file:"audio/11-movie.mp4", num:"⑰", video:true, name:"真言All", desc:"動画／3分59秒" },
+  { file:"audio/12-audio2.mp3", num:"⑱", name:"えびす様　オン・インダラヤ・ソワカ", desc:"30秒" },
 ];
 
 /* ===== 端末に置いた音源で鳴らす =====
@@ -342,7 +342,7 @@ function bHaveSet(k,v){
   if(v) o[k]=v; else delete o[k];
   try{ localStorage.setItem(BHAVE,JSON.stringify(o)); }catch(e){}
 }
-const tkey = t => t.file.replace(/^audio\//,'').replace(/\.mp3$/i,'');
+const tkey = t => t.file.replace(/^audio\//,'').replace(/\.(mp3|mp4)$/i,'');
 let curObjUrl=null;
 async function setTrackSrc(t){
   if(curObjUrl){ try{ URL.revokeObjectURL(curObjUrl); }catch(e){} curObjUrl=null; }
@@ -405,6 +405,8 @@ function updateTrackInfo(){
   const t = TRACKS[trackIndex];
   trackNameEl.textContent = t.name;
   trackDescEl.textContent = t.desc;
+  player.style.display = t.video ? "block" : "none";
+  document.getElementById("coverWrap").style.display = t.video ? "none" : "";
   [...tracklistEl.children].forEach((el,i)=> el.classList.toggle("active", i===trackIndex));
 }
 
@@ -468,6 +470,7 @@ document.getElementById("prevBtn").addEventListener("click", ()=> loadTrack(trac
 document.getElementById("nextBtn").addEventListener("click", ()=> loadTrack(trackIndex+1, !player.paused));
 
 player.addEventListener("loadedmetadata", ()=>{
+  if(player.videoWidth) player.style.aspectRatio = player.videoWidth+" / "+player.videoHeight;
   seekEl.max = player.duration || 0;
   durTimeEl.textContent = fmt(player.duration);
   const durEl = tracklistEl.querySelector(`[data-dur="${trackIndex}"]`);
