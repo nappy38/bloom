@@ -1,4 +1,4 @@
-const CACHE_NAME = "bloom-v30";
+const CACHE_NAME = "bloom-v33";
 const APP_SHELL = [
   "./",
   "index.html",
