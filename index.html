@@ -422,6 +422,7 @@ async function loadTrack(i, autoplay){
   trackIndex = ((i % TRACKS.length) + TRACKS.length) % TRACKS.length;
   await setTrackSrc(TRACKS[trackIndex]);
   updateTrackInfo();
+  if(TRACKS[trackIndex].video){ try{ player.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){} }
   if(autoplay) play();
 }
 
